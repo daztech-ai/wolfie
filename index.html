@@ -322,10 +322,14 @@ function decide() {
     bet = 2 * baseUnit;
     sizeLabel = '2u base';
     whyParts.push('Wolfie mode ▸ 2u = $' + (2 * baseUnit));
-    if (S.lastBetWon && S.pressStep >= 1) {
+    if (S.lastBetWon && S.pressStep === 1) {
       bet = Math.min(3 * baseUnit, cap);
       sizeLabel = '3u press';
       whyParts.push('Won last ▸ press to 3u');
+    } else if (S.lastBetWon && S.pressStep >= 2) {
+      bet = cap;
+      sizeLabel = 'max press';
+      whyParts.push('Hot streak ▸ max press $' + cap);
     }
   }
 
