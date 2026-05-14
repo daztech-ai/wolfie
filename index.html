@@ -12,20 +12,28 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 .br{font-size:28px;font-weight:700;}
 .br .profit{color:#3fb950;font-size:18px;margin-left:8px;}
 .br .loss{color:#f85149;}
+.top-actions{display:flex;align-items:center;gap:6px;}
 .mode-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:.5px;}
 .mode-normal{background:#1a2332;color:#8b949e;}
 .mode-wolfie{background:#da3633;color:#fff;}
 .sub-info{display:flex;gap:16px;font-size:12px;color:#8b949e;padding:6px 0;}
 .result-strip{display:flex;gap:3px;padding:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid #21262d;min-height:20px;}
 .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-.dot-b{background:#58a6ff}.dot-p{background:#f85149}.dot-t{background:#484f58}.dot-b6{background:#d2991d}
+.dot-b{background:#58a6ff}.dot-p{background:#f85149}.dot-t{background:#484f58}.dot-b6{background:#d2991d}.dot-dash{background:#30363d;border-radius:2px;width:8px;}
+
+/* Call area */
 .call-area{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;}
+.mode-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-bottom:6px;}
+.mode-label-w{color:#da3633;}
+.mode-label-n{color:#8b949e;}
 .call-text{font-size:96px;font-weight:800;letter-spacing:-2px;text-align:center;line-height:1;}
 .call-b{color:#58a6ff}.call-p{color:#f85149}.call-skip{color:#484f58;font-size:72px;}
-.miss-text{font-size:16px;color:#8b949e;text-align:center;margin-top:4px;}
-.why-text{font-size:13px;color:#58a6ff;text-align:center;margin-top:2px;line-height:1.4;min-height:18px;}
+.bet-size-text{font-size:16px;color:#8b949e;text-align:center;margin-top:8px;min-height:20px;}
+.miss-text{font-size:15px;color:#8b949e;text-align:center;margin-top:2px;min-height:20px;}
 .info-btn{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;border:1px solid #30363d;background:#161b22;color:#8b949e;font-size:14px;font-weight:700;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;}
 .info-btn:active{background:#21262d;}
+
+/* Info overlay */
 .info-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:300;padding:24px;}
 .info-card{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px;max-width:360px;width:100%;}
 .info-card h3{font-size:20px;margin-bottom:12px;}
@@ -33,15 +41,31 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 .info-card .highlight{color:#58a6ff;font-weight:600;}
 .info-card .warn{color:#d2991d;font-weight:600;}
 .info-card button{margin-top:12px;padding:10px 24px;border-radius:10px;border:none;background:#21262d;color:#e6edf3;font-size:14px;cursor:pointer;width:100%;}
+
+/* Buttons */
 .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0 4px 0;}
 .btn{padding:24px 0;border-radius:16px;border:none;font-size:32px;font-weight:700;text-align:center;cursor:pointer;transition:transform .05s;-webkit-tap-highlight-color:transparent;}
 .btn:active{transform:scale(.95);}
 .btn-b{background:#1a3a5c;color:#58a6ff}.btn-p{background:#3d1a1a;color:#f85149}.btn-t{background:#1c2128;color:#8b949e}.btn-b6{background:#2d2410;color:#d2991d}
-.btn-skip{padding:20px 0;border-radius:16px;border:1px solid #30363d;background:#161b22;color:#484f58;font-size:24px;font-weight:600;text-align:center;cursor:pointer;margin-top:8px;width:100%;}
-.btn-skip:active{background:#21262d;}
-.btn-undo{padding:8px 16px;border-radius:12px;border:1px solid #30363d;background:transparent;color:#8b949e;font-size:12px;cursor:pointer;margin-left:8px;}
-.bottom-stats{display:flex;justify-content:space-between;font-size:13px;color:#8b949e;padding:8px 0 4px 0;border-top:1px solid #21262d;}
+.skip-row{display:flex;gap:8px;padding:0 0 4px 0;}
+.btn-skip-result{flex:1;padding:16px 0;border-radius:12px;border:1px solid #30363d;background:#161b22;color:#8b949e;font-size:14px;font-weight:600;text-align:center;cursor:pointer;}
+.btn-skip-result:active{background:#21262d;}
+
+/* Bottom bar */
+.bottom-stats{display:flex;justify-content:space-between;font-size:13px;color:#8b949e;padding:6px 0 4px 0;border-top:1px solid #21262d;}
 .stat-wins{color:#3fb950}.stat-losses{color:#f85149}
+.bottom-actions{display:flex;gap:8px;padding:4px 0 8px 0;}
+.btn-action{flex:1;padding:10px 0;border-radius:10px;border:1px solid #30363d;background:#161b22;font-size:13px;font-weight:600;cursor:pointer;text-align:center;}
+.btn-action:active{background:#21262d;}
+.btn-copy{color:#58a6ff;}
+.btn-reset{color:#f85149;}
+.btn-home{color:#8b949e;}
+
+/* Utility */
+.btn-undo{padding:8px 16px;border-radius:12px;border:1px solid #30363d;background:transparent;color:#8b949e;font-size:12px;cursor:pointer;}
+.btn-undo:active,.btn-home-sm:active{background:#21262d;}
+.btn-home-sm{padding:8px 12px;border-radius:12px;border:1px solid #30363d;background:transparent;color:#8b949e;font-size:12px;cursor:pointer;}
+
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#21262d;color:#e6edf3;padding:8px 20px;border-radius:20px;font-size:14px;z-index:100;opacity:0;transition:opacity .2s;}
 .toast.show{opacity:1;}
 
@@ -84,7 +108,8 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 <div class="app hidden" id="play">
   <div class="top-bar">
     <div class="br" id="bankroll">$250</div>
-    <div style="display:flex;align-items:center;gap:8px;">
+    <div class="top-actions">
+      <button class="btn-home-sm" onclick="goHome()" title="End session">⌂</button>
       <button class="btn-undo" onclick="undo()">↩</button>
       <div class="mode-badge mode-wolfie" id="modeBadge">WOLFIE</div>
     </div>
@@ -94,33 +119,42 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
     <span id="targetInfo">Target: $500</span>
     <span id="handInfo">Hand: 0</span>
   </div>
-  
+
   <div class="result-strip" id="resultStrip"></div>
-  
+
   <div class="call-area">
     <div>
+      <div class="mode-label mode-label-w" id="modeLabel">WOLFIE</div>
       <div style="position:relative;">
         <div class="call-text call-skip" id="callText">SKIP</div>
         <button class="info-btn" onclick="toggleWhy()" title="Why this call?">?</button>
       </div>
+      <div class="bet-size-text" id="betSizeText"></div>
       <div class="miss-text" id="missText"></div>
-      <div class="why-text" id="whyText"></div>
     </div>
   </div>
-  
+
   <div class="btn-grid">
     <button class="btn btn-b" onclick="tap('B')">B</button>
     <button class="btn btn-p" onclick="tap('P')">P</button>
     <button class="btn btn-t" onclick="tap('T')">T</button>
     <button class="btn btn-b6" onclick="tap('B6')">B6</button>
   </div>
-  <button class="btn-skip" onclick="tap('SKIP')">SKIP</button>
-  
+  <div class="skip-row">
+    <button class="btn-skip-result" onclick="skipResult('B')">B Skip</button>
+    <button class="btn-skip-result" onclick="skipResult('P')">P Skip</button>
+    <button class="btn-skip-result" onclick="skipResult('T')">T Skip</button>
+  </div>
+
   <div class="bottom-stats">
     <span>✓ <span class="stat-wins" id="statWins">0</span></span>
     <span>✗ <span class="stat-losses" id="statLosses">0</span></span>
     <span>— <span id="statTies">0</span></span>
     <span>Peak <span id="statPeak">$250</span></span>
+  </div>
+  <div class="bottom-actions">
+    <button class="btn-action btn-copy" onclick="copyResults()">📋 Copy Results</button>
+    <button class="btn-action btn-reset" onclick="goHome()">↺ Reset Session</button>
   </div>
 </div>
 
@@ -155,6 +189,9 @@ function quickPreset() {
 }
 
 function startSession() {
+  // Clear any saved session
+  try { localStorage.removeItem('wolfie_session'); } catch(e) {}
+
   S.startBR = S.bankroll = parseFloat(document.getElementById('s-br').value);
   S.minBet = parseFloat(document.getElementById('s-min').value);
   S.target = parseFloat(document.getElementById('s-target').value);
@@ -162,11 +199,18 @@ function startSession() {
   S.rules = document.getElementById('s-rules').value;
   S.results = []; S.bets = []; S.hands = 0; S.peak = S.bankroll;
   S.pressStep = 0; S.lastBetWon = false; S.skipNext = false;
-  
+
   document.getElementById('setup').classList.add('hidden');
   document.getElementById('play').classList.remove('hidden');
   updateUI();
   decide();
+}
+
+function goHome() {
+  // Clear saved session so we don't auto-resume
+  try { localStorage.removeItem('wolfie_session'); } catch(e) {}
+  document.getElementById('play').classList.add('hidden');
+  document.getElementById('setup').classList.remove('hidden');
 }
 
 function updateUI() {
@@ -176,25 +220,25 @@ function updateUI() {
   brEl.innerHTML = '$' + br.toFixed(0);
   if (profit > 0) brEl.innerHTML += ' <span class="profit">+$' + profit.toFixed(0) + '</span>';
   else if (profit < 0) brEl.innerHTML += ' <span class="loss">-$' + Math.abs(profit).toFixed(0) + '</span>';
-  
+
   document.getElementById('minInfo').textContent = 'Min: $' + S.minBet;
   document.getElementById('targetInfo').textContent = 'Target: $' + S.target;
   document.getElementById('handInfo').textContent = 'Hand: ' + S.hands;
-  
+
   let badge = document.getElementById('modeBadge');
   badge.textContent = S.mode.toUpperCase();
   badge.className = 'mode-badge mode-' + S.mode;
   if (S.mode === 'fullrisk') { badge.textContent = 'FULL-RISK'; badge.className = 'mode-badge mode-wolfie'; }
-  
+
   // Result strip
   let strip = document.getElementById('resultStrip');
-  strip.innerHTML = S.results.slice(-20).map(r => 
-    '<span class="dot dot-' + r.toLowerCase().replace('b6','b6') + '"></span>'
+  strip.innerHTML = S.results.slice(-30).map(r =>
+    '<span class="dot dot-' + r.toLowerCase().replace('—','dash') + '"></span>'
   ).join('');
-  
+
   // Stats
   let wins = S.bets.filter(b=>b.won).length;
-  let losses = S.bets.filter(b=>!b.won && b.result !== 'T').length;
+  let losses = S.bets.filter(b=>!b.won && b.result !== 'T' && b.result !== 'SKIP').length;
   let ties = S.bets.filter(b=>b.result === 'T').length;
   document.getElementById('statWins').textContent = wins;
   document.getElementById('statLosses').textContent = losses;
@@ -209,35 +253,35 @@ function getNonTieResults() {
 
 function decide() {
   // Stop checks
-  if (S.bankroll < S.minBet) { showCall('BUST', 'skip'); return; }
-  if (S.bankroll >= S.target) { showCall('TARGET!', 'skip'); return; }
-  
+  if (S.bankroll < S.minBet) { showCall('BUST', 'skip', '', '', ''); return; }
+  if (S.bankroll >= S.target) { showCall('TARGET!', 'b', '', '', '+$' + (S.bankroll - S.startBR).toFixed(0) + ' — bank it!'); return; }
+
   let nonTies = getNonTieResults();
-  let lastBet = S.bets[S.bets.length - 1];
-  
+
   // Auto-SKIP conditions
   let lastTwo = S.results.slice(-2);
   if (lastTwo.length === 2 && lastTwo[0] === 'T' && lastTwo[1] === 'T') {
-    showCall('SKIP', 'skip'); return;
+    showCall('SKIP', 'skip', '', '', '');
+    return;
   }
   if (S.skipNext) {
     S.skipNext = false;
-    showCall('SKIP', 'skip'); return;
+    showCall('SKIP', 'skip', '', '', '');
+    return;
   }
   if (S.bankroll < 3 * S.minBet && S.mode !== 'fullrisk') {
-    showCall('SKIP — survival', 'skip'); return;
+    showCall('SKIP', 'skip', '', '', 'survival');
+    return;
   }
-  
+
   // Pick side
-  let side = 'B';  // Default Banker
+  let side = 'B';
   if (nonTies.length >= 2) {
     let last = nonTies[nonTies.length - 1];
     let prev = nonTies[nonTies.length - 2];
-    // Streak: follow
     if (last === prev && nonTies.length >= 2) {
       side = last;
     }
-    // Chop: fade (4+ alternating)
     else if (nonTies.length >= 5) {
       let isChop = true;
       for (let i = nonTies.length - 4; i < nonTies.length; i++) {
@@ -246,111 +290,128 @@ function decide() {
       if (isChop) side = nonTies[nonTies.length-1] === 'B' ? 'P' : 'B';
     }
   }
-  
+
   // Sizing
   let baseUnit = S.minBet;
   let cap = 3 * S.minBet;
   let bet;
   let whyParts = [];
-  
+  let sizeLabel = '';
+
   if (S.mode === 'normal') {
     bet = baseUnit;
+    sizeLabel = '1u base';
     whyParts.push('Normal mode ▸ 1u = $' + baseUnit);
     if (S.lastBetWon && S.pressStep === 1 && S.bankroll >= 7 * baseUnit) {
       bet = Math.min(2 * baseUnit, cap);
+      sizeLabel = '2u press';
       whyParts.push('Won last ▸ press to 2u');
     } else if (S.lastBetWon && S.pressStep === 0 && S.bankroll >= 6 * baseUnit) {
       bet = Math.min(1.5 * baseUnit, cap);
+      sizeLabel = '1.5u press';
       whyParts.push('Won last ▸ press to 1.5u');
     }
   } else {
     // Wolfie
     bet = 2 * baseUnit;
+    sizeLabel = '2u base';
     whyParts.push('Wolfie mode ▸ 2u = $' + (2 * baseUnit));
     if (S.lastBetWon && S.pressStep >= 1) {
       bet = Math.min(3 * baseUnit, cap);
+      sizeLabel = '3u press';
       whyParts.push('Won last ▸ press to 3u');
     }
   }
-  
+
   bet = Math.min(bet, S.bankroll, cap);
   whyParts.push('Cap: 3× min ($' + cap + ')');
-  
+
   // Near target: bet exact need
   let need = S.target - S.bankroll;
   if (need <= bet && need >= S.minBet) {
     bet = need;
+    sizeLabel = 'closeout';
     whyParts.push('Closeout ▸ exact target');
   }
-  
+
   S._pendingCall = { side, bet, why: whyParts };
-  showCall(side === 'B' ? 'B' : 'P', side === 'B' ? 'b' : 'p', '$' + bet.toFixed(0));
-  document.getElementById('missText').textContent = '$' + (S.bankroll - bet).toFixed(0) + ' miss';
-  document.getElementById('whyText').textContent = whyParts.join(' · ');
+
+  let modeLabel = S.mode === 'fullrisk' ? 'FULL-RISK' : S.mode.toUpperCase();
+  let callText = (side === 'B' ? 'B' : 'P') + ' $' + bet.toFixed(0);
+  showCall(callText, side === 'B' ? 'b' : 'p', modeLabel, sizeLabel, '$' + (S.bankroll - bet).toFixed(0) + ' miss');
 }
 
-function showCall(text, cls, sub) {
-  let el = document.getElementById('callText');
-  el.textContent = text;
-  el.className = 'call-text call-' + cls;
-  if (!sub) document.getElementById('missText').textContent = '';
-  if (cls === 'skip') document.getElementById('whyText').textContent = '';
+function showCall(text, cls, modeLabel, sizeLabel, missLabel) {
+  document.getElementById('callText').textContent = text;
+  document.getElementById('callText').className = 'call-text call-' + cls;
+
+  // Mode label
+  let ml = document.getElementById('modeLabel');
+  ml.textContent = modeLabel;
+  if (modeLabel === 'NORMAL') {
+    ml.className = 'mode-label mode-label-n';
+  } else {
+    ml.className = 'mode-label mode-label-w';
+  }
+
+  document.getElementById('betSizeText').textContent = sizeLabel || '';
+  document.getElementById('missText').textContent = missLabel || '';
 }
 
 // ─── INPUT ───
+function skipResult(result) {
+  // Record result but no bankroll impact
+  S.results.push(result);
+  S.hands++;
+  S.bets.push({ side: 'SKIP', amt: 0, result: result, won: false, brChange: 0 });
+  S.lastBetWon = false;
+  S.pressStep = 0;
+  S.skipNext = false;
+  S._pendingCall = null;
+  updateUI();
+  decide();
+}
+
 function tap(result) {
-  if (result === 'SKIP') {
-    S.results.push('—');
-    S.hands++;
-    S.bets.push({ side: 'SKIP', amt: 0, result: 'SKIP', won: false });
-    S.lastBetWon = false;
-    S.pressStep = 0;
-    S.skipNext = false;
-    updateUI();
-    decide();
-    return;
-  }
-  
-  // Result tap: B, P, T, B6
   if (!S._pendingCall && result !== 'T') {
-    // No pending bet but user tapped result — just record
+    // No pending bet but user tapped result — just record (no bet)
     S.results.push(result);
     S.hands++;
+    S.bets.push({ side: '—', amt: 0, result: result, won: false, brChange: 0 });
     updateUI();
     decide();
     return;
   }
-  
+
   let call = S._pendingCall || { side: 'B', bet: 0 };
   let bet = call.bet;
   let side = call.side;
-  
+
   // Process result
   S.results.push(result);
   S.hands++;
-  
+
   let won = false;
   let brChange = 0;
-  
+
   if (result === 'T') {
-    brChange = 0;  // push
+    brChange = 0;
   } else if (result === side) {
     brChange = bet;
     won = true;
   } else if (side === 'B' && result === 'B6') {
-    // Even Money: Banker 6 pays half
     brChange = S.rules === 'even_money' ? bet * 0.5 : bet;
     won = true;
   } else {
     brChange = -bet;
     won = false;
   }
-  
+
   S.bankroll += brChange;
   S.peak = Math.max(S.peak, S.bankroll);
-  
+
   S.bets.push({ side, amt: bet, result, won, brChange });
-  
+
   if (won) {
     S.lastBetWon = true;
     S.pressStep++;
@@ -360,22 +421,20 @@ function tap(result) {
     S.pressStep = 0;
     S.skipNext = (S.mode === 'normal') || (bet >= 2 * S.minBet);
   }
-  
+
   S._pendingCall = null;
   updateUI();
-  
+
   // Check stop conditions
   if (S.bankroll < S.minBet) {
-    showCall('BUST', 'skip');
-    document.getElementById('missText').textContent = 'Session over — stop-loss';
+    showCall('BUST', 'skip', S.mode.toUpperCase(), '', 'Session over — stop-loss');
     return;
   }
   if (S.bankroll >= S.target) {
-    showCall('TARGET!', 'b');
-    document.getElementById('missText').textContent = '+$' + (S.bankroll - S.startBR).toFixed(0) + ' — bank it!';
+    showCall('TARGET!', 'b', S.mode.toUpperCase(), '', '+$' + (S.bankroll - S.startBR).toFixed(0) + ' — bank it!');
     return;
   }
-  
+
   decide();
 }
 
@@ -384,21 +443,62 @@ function undo() {
   let last = S.bets.pop();
   S.results.pop();
   S.hands--;
-  S.bankroll -= last.brChange;
-  
+  S.bankroll -= (last.brChange || 0);
+
   // Restore previous state
   if (S.bets.length > 0) {
     let prev = S.bets[S.bets.length - 1];
     S.lastBetWon = prev.won;
-    S.pressStep = prev.won ? (S.pressStep - 1) : 0;
+    S.pressStep = prev.won ? Math.max(0, S.pressStep - 1) : 0;
   } else {
     S.lastBetWon = false;
     S.pressStep = 0;
   }
-  
+
   S._pendingCall = null;
   updateUI();
   decide();
+}
+
+// ─── COPY RESULTS ───
+function copyResults() {
+  let profit = S.bankroll - S.startBR;
+  let sign = profit >= 0 ? '+' : '';
+  let wins = S.bets.filter(b=>b.won).length;
+  let losses = S.bets.filter(b=>!b.won && b.side !== 'SKIP' && b.result !== 'T' && b.side !== '—').length;
+  let ties = S.bets.filter(b=>b.result === 'T').length;
+  let skips = S.bets.filter(b=>b.side === 'SKIP' || b.side === '—').length;
+  let actualBets = S.bets.filter(b=>b.amt > 0);
+  let rulesLabel = S.rules === 'even_money' ? 'Even Money (B6 half-pay)' : 'Standard (5% commission)';
+
+  let text = '📊 Baccarat Session\n';
+  text += 'BR: $' + S.startBR + ' → $' + S.bankroll.toFixed(0) + ' (' + sign + '$' + profit.toFixed(0) + ') | Peak: $' + S.peak.toFixed(0) + '\n';
+  text += 'Mode: ' + S.mode.charAt(0).toUpperCase() + S.mode.slice(1) + ' | Rules: ' + rulesLabel + ' | Min: $' + S.minBet + '\n';
+  text += 'Target: $' + S.target + ' | Hands: ' + S.hands + '\n';
+  text += 'Bets placed: ' + actualBets.length + ' | W:' + wins + ' L:' + losses + ' T:' + ties + ' Skips:' + skips + '\n';
+  text += 'Results: ' + S.results.join(' ') + '\n';
+  if (actualBets.length > 0) {
+    text += 'Bets: ';
+    text += actualBets.map(b => {
+      let sym = b.won ? '✓' : (b.result === 'T' ? '—' : '✗');
+      return b.side + ' $' + b.amt + sym;
+    }).join('  ');
+    text += '\n';
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    toast('Copied!');
+  }).catch(() => {
+    // Fallback for older browsers
+    let ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Copied!');
+  });
 }
 
 // ─── PERSIST ───
