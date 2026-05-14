@@ -23,6 +23,16 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 .call-text{font-size:96px;font-weight:800;letter-spacing:-2px;text-align:center;line-height:1;}
 .call-b{color:#58a6ff}.call-p{color:#f85149}.call-skip{color:#484f58;font-size:72px;}
 .miss-text{font-size:16px;color:#8b949e;text-align:center;margin-top:4px;}
+.why-text{font-size:13px;color:#58a6ff;text-align:center;margin-top:2px;line-height:1.4;min-height:18px;}
+.info-btn{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;border:1px solid #30363d;background:#161b22;color:#8b949e;font-size:14px;font-weight:700;cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;}
+.info-btn:active{background:#21262d;}
+.info-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:300;padding:24px;}
+.info-card{background:#161b22;border:1px solid #30363d;border-radius:16px;padding:24px;max-width:360px;width:100%;}
+.info-card h3{font-size:20px;margin-bottom:12px;}
+.info-card p{font-size:14px;color:#8b949e;margin-bottom:8px;line-height:1.5;}
+.info-card .highlight{color:#58a6ff;font-weight:600;}
+.info-card .warn{color:#d2991d;font-weight:600;}
+.info-card button{margin-top:12px;padding:10px 24px;border-radius:10px;border:none;background:#21262d;color:#e6edf3;font-size:14px;cursor:pointer;width:100%;}
 .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0 4px 0;}
 .btn{padding:24px 0;border-radius:16px;border:none;font-size:32px;font-weight:700;text-align:center;cursor:pointer;transition:transform .05s;-webkit-tap-highlight-color:transparent;}
 .btn:active{transform:scale(.95);}
@@ -89,8 +99,12 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
   
   <div class="call-area">
     <div>
-      <div class="call-text call-skip" id="callText">SKIP</div>
+      <div style="position:relative;">
+        <div class="call-text call-skip" id="callText">SKIP</div>
+        <button class="info-btn" onclick="toggleWhy()" title="Why this call?">?</button>
+      </div>
       <div class="miss-text" id="missText"></div>
+      <div class="why-text" id="whyText"></div>
     </div>
   </div>
   
@@ -111,6 +125,15 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- INFO OVERLAY -->
+<div class="info-overlay hidden" id="infoOverlay" onclick="if(event.target===this) toggleWhy()">
+  <div class="info-card">
+    <h3>Why this call?</h3>
+    <div id="infoContent"></div>
+    <button onclick="toggleWhy()">Got it</button>
+  </div>
+</div>
 
 <script>
 // ─── STATE ───
@@ -228,30 +251,42 @@ function decide() {
   let baseUnit = S.minBet;
   let cap = 3 * S.minBet;
   let bet;
+  let whyParts = [];
   
   if (S.mode === 'normal') {
     bet = baseUnit;
-    if (S.lastBetWon && S.pressStep === 1 && S.bankroll >= 7 * baseUnit) bet = Math.min(2 * baseUnit, cap);
-    else if (S.lastBetWon && S.pressStep === 0 && S.bankroll >= 6 * baseUnit) bet = Math.min(1.5 * baseUnit, cap);
+    whyParts.push('Normal mode ▸ 1u = $' + baseUnit);
+    if (S.lastBetWon && S.pressStep === 1 && S.bankroll >= 7 * baseUnit) {
+      bet = Math.min(2 * baseUnit, cap);
+      whyParts.push('Won last ▸ press to 2u');
+    } else if (S.lastBetWon && S.pressStep === 0 && S.bankroll >= 6 * baseUnit) {
+      bet = Math.min(1.5 * baseUnit, cap);
+      whyParts.push('Won last ▸ press to 1.5u');
+    }
   } else {
     // Wolfie
     bet = 2 * baseUnit;
+    whyParts.push('Wolfie mode ▸ 2u = $' + (2 * baseUnit));
     if (S.lastBetWon && S.pressStep >= 1) {
       bet = Math.min(3 * baseUnit, cap);
+      whyParts.push('Won last ▸ press to 3u');
     }
   }
   
   bet = Math.min(bet, S.bankroll, cap);
+  whyParts.push('Cap: 3× min ($' + cap + ')');
   
   // Near target: bet exact need
   let need = S.target - S.bankroll;
   if (need <= bet && need >= S.minBet) {
     bet = need;
+    whyParts.push('Closeout ▸ exact target');
   }
   
-  S._pendingCall = { side, bet };
+  S._pendingCall = { side, bet, why: whyParts };
   showCall(side === 'B' ? 'B' : 'P', side === 'B' ? 'b' : 'p', '$' + bet.toFixed(0));
   document.getElementById('missText').textContent = '$' + (S.bankroll - bet).toFixed(0) + ' miss';
+  document.getElementById('whyText').textContent = whyParts.join(' · ');
 }
 
 function showCall(text, cls, sub) {
@@ -259,6 +294,7 @@ function showCall(text, cls, sub) {
   el.textContent = text;
   el.className = 'call-text call-' + cls;
   if (!sub) document.getElementById('missText').textContent = '';
+  if (cls === 'skip') document.getElementById('whyText').textContent = '';
 }
 
 // ─── INPUT ───
@@ -390,6 +426,28 @@ function toast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+// ─── INFO POPUP ───
+function toggleWhy() {
+  let overlay = document.getElementById('infoOverlay');
+  if (overlay.classList.contains('hidden')) {
+    let call = S._pendingCall;
+    if (!call || !call.why) {
+      document.getElementById('infoContent').innerHTML = '<p>No active call. Tap a result first to see the next call with sizing explanation.</p>';
+    } else {
+      let html = '<p><span class="highlight">Mode:</span> ' + S.mode.toUpperCase() + '</p>';
+      html += '<p><span class="highlight">Min bet:</span> $' + S.minBet + ' · <span class="warn">Cap: $' + (S.minBet * 3) + '</span></p>';
+      html += '<p><span class="highlight">Sizing:</span></p>';
+      for (let w of call.why) html += '<p style="padding-left:12px;">▸ ' + w + '</p>';
+      html += '<p style="margin-top:8px;"><span class="highlight">Rules:</span> ' + (S.rules === 'even_money' ? 'Even Money — Banker 6 pays half' : 'Standard — 5% commission') + '</p>';
+      html += '<p><span class="warn">Never chase losses</span> · Loss resets to base</p>';
+      document.getElementById('infoContent').innerHTML = html;
+    }
+    overlay.classList.remove('hidden');
+  } else {
+    overlay.classList.add('hidden');
+  }
 }
 </script>
 </body>
