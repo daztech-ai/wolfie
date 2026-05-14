@@ -85,9 +85,11 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 <div class="setup-overlay" id="setup">
   <h2>⚡ Wolfie Setup</h2>
   <label>Bankroll ($)</label>
-  <input type="number" id="s-br" value="250" min="10" step="10">
+  <input type="number" id="s-br" value="200" min="10" step="10">
   <label>Table Minimum ($)</label>
-  <input type="number" id="s-min" value="30" min="10" step="5">
+  <input type="number" id="s-min" value="20" min="10" step="5">
+  <label>Max Bet ($)</label>
+  <input type="number" id="s-max" value="100" min="10" step="5">
   <label>Target ($)</label>
   <input type="number" id="s-target" value="500" min="10" step="10">
   <label>Mode</label>
@@ -101,13 +103,13 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
     <option value="standard">Standard (5% commission)</option>
   </select>
   <button class="btn-start" onclick="startSession()">START SESSION</button>
-  <button class="btn-preset" onclick="quickPreset()">Quick: $250 / $30 / $500 / Wolfie</button>
+  <button class="btn-preset" onclick="quickPreset()">Quick: $200 / $20 / $100 / $500 / Wolfie</button>
 </div>
 
 <!-- PLAY SCREEN -->
 <div class="app hidden" id="play">
   <div class="top-bar">
-    <div class="br" id="bankroll">$250</div>
+    <div class="br" id="bankroll">$200</div>
     <div class="top-actions">
       <button class="btn-home-sm" onclick="goHome()" title="End session">⌂</button>
       <button class="btn-undo" onclick="undo()">↩</button>
@@ -115,7 +117,8 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
     </div>
   </div>
   <div class="sub-info">
-    <span id="minInfo">Min: $30</span>
+    <span id="minInfo">Min: $20</span>
+    <span id="capInfo">Cap: $100</span>
     <span id="targetInfo">Target: $500</span>
     <span id="handInfo">Hand: 0</span>
   </div>
@@ -150,7 +153,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
     <span>✓ <span class="stat-wins" id="statWins">0</span></span>
     <span>✗ <span class="stat-losses" id="statLosses">0</span></span>
     <span>— <span id="statTies">0</span></span>
-    <span>Peak <span id="statPeak">$250</span></span>
+    <span>Peak <span id="statPeak">$200</span></span>
   </div>
   <div class="bottom-actions">
     <button class="btn-action btn-copy" onclick="copyResults()">📋 Copy Results</button>
@@ -172,18 +175,19 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 <script>
 // ─── STATE ───
 let S = {
-  bankroll: 250, startBR: 250, minBet: 30, target: 500,
+  bankroll: 200, startBR: 200, minBet: 20, maxBet: 100, target: 500,
   mode: 'wolfie', rules: 'even_money',
   results: [],  // ['B','P','T','B6']
   bets: [],     // [{side:'B',amt:60,result:'B',won:true}]
-  hands: 0, peak: 250,
+  hands: 0, peak: 200,
   pressStep: 0, lastBetWon: false, skipNext: false,
 };
 
 // ─── SETUP ───
 function quickPreset() {
-  document.getElementById('s-br').value = '250';
-  document.getElementById('s-min').value = '30';
+  document.getElementById('s-br').value = '200';
+  document.getElementById('s-min').value = '20';
+  document.getElementById('s-max').value = '100';
   document.getElementById('s-target').value = '500';
   document.getElementById('s-mode').value = 'wolfie';
 }
@@ -194,6 +198,7 @@ function startSession() {
 
   S.startBR = S.bankroll = parseFloat(document.getElementById('s-br').value);
   S.minBet = parseFloat(document.getElementById('s-min').value);
+  S.maxBet = parseFloat(document.getElementById('s-max').value);
   S.target = parseFloat(document.getElementById('s-target').value);
   S.mode = document.getElementById('s-mode').value;
   S.rules = document.getElementById('s-rules').value;
@@ -222,6 +227,7 @@ function updateUI() {
   else if (profit < 0) brEl.innerHTML += ' <span class="loss">-$' + Math.abs(profit).toFixed(0) + '</span>';
 
   document.getElementById('minInfo').textContent = 'Min: $' + S.minBet;
+  document.getElementById('capInfo').textContent = 'Cap: $' + S.maxBet;
   document.getElementById('targetInfo').textContent = 'Target: $' + S.target;
   document.getElementById('handInfo').textContent = 'Hand: ' + S.hands;
 
@@ -293,7 +299,7 @@ function decide() {
 
   // Sizing
   let baseUnit = S.minBet;
-  let cap = 3 * S.minBet;
+  let cap = S.maxBet;
   let bet;
   let whyParts = [];
   let sizeLabel = '';
@@ -324,7 +330,7 @@ function decide() {
   }
 
   bet = Math.min(bet, S.bankroll, cap);
-  whyParts.push('Cap: 3× min ($' + cap + ')');
+  whyParts.push('Cap: $' + cap);
 
   // Near target: bet exact need
   let need = S.target - S.bankroll;
@@ -473,7 +479,7 @@ function copyResults() {
 
   let text = '📊 Baccarat Session\n';
   text += 'BR: $' + S.startBR + ' → $' + S.bankroll.toFixed(0) + ' (' + sign + '$' + profit.toFixed(0) + ') | Peak: $' + S.peak.toFixed(0) + '\n';
-  text += 'Mode: ' + S.mode.charAt(0).toUpperCase() + S.mode.slice(1) + ' | Rules: ' + rulesLabel + ' | Min: $' + S.minBet + '\n';
+  text += 'Mode: ' + S.mode.charAt(0).toUpperCase() + S.mode.slice(1) + ' | Rules: ' + rulesLabel + ' | Min: $' + S.minBet + ' | Cap: $' + S.maxBet + '\n';
   text += 'Target: $' + S.target + ' | Hands: ' + S.hands + '\n';
   text += 'Bets placed: ' + actualBets.length + ' | W:' + wins + ' L:' + losses + ' T:' + ties + ' Skips:' + skips + '\n';
   text += 'Results: ' + S.results.join(' ') + '\n';
@@ -537,7 +543,7 @@ function toggleWhy() {
       document.getElementById('infoContent').innerHTML = '<p>No active call. Tap a result first to see the next call with sizing explanation.</p>';
     } else {
       let html = '<p><span class="highlight">Mode:</span> ' + S.mode.toUpperCase() + '</p>';
-      html += '<p><span class="highlight">Min bet:</span> $' + S.minBet + ' · <span class="warn">Cap: $' + (S.minBet * 3) + '</span></p>';
+      html += '<p><span class="highlight">Min bet:</span> $' + S.minBet + ' · <span class="warn">Cap: $' + S.maxBet + '</span></p>';
       html += '<p><span class="highlight">Sizing:</span></p>';
       for (let w of call.why) html += '<p style="padding-left:12px;">▸ ' + w + '</p>';
       html += '<p style="margin-top:8px;"><span class="highlight">Rules:</span> ' + (S.rules === 'even_money' ? 'Even Money — Banker 6 pays half' : 'Standard — 5% commission') + '</p>';
