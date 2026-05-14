@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Wolfie — Live Baccarat</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;padding:12px 16px;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #21262d;}
+.br{font-size:28px;font-weight:700;}
+.br .profit{color:#3fb950;font-size:18px;margin-left:8px;}
+.br .loss{color:#f85149;}
+.mode-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:12px;text-transform:uppercase;letter-spacing:.5px;}
+.mode-normal{background:#1a2332;color:#8b949e;}
+.mode-wolfie{background:#da3633;color:#fff;}
+.sub-info{display:flex;gap:16px;font-size:12px;color:#8b949e;padding:6px 0;}
+.result-strip{display:flex;gap:3px;padding:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid #21262d;min-height:20px;}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.dot-b{background:#58a6ff}.dot-p{background:#f85149}.dot-t{background:#484f58}.dot-b6{background:#d2991d}
+.call-area{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;}
+.call-text{font-size:96px;font-weight:800;letter-spacing:-2px;text-align:center;line-height:1;}
+.call-b{color:#58a6ff}.call-p{color:#f85149}.call-skip{color:#484f58;font-size:72px;}
+.miss-text{font-size:16px;color:#8b949e;text-align:center;margin-top:4px;}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0 4px 0;}
+.btn{padding:24px 0;border-radius:16px;border:none;font-size:32px;font-weight:700;text-align:center;cursor:pointer;transition:transform .05s;-webkit-tap-highlight-color:transparent;}
+.btn:active{transform:scale(.95);}
+.btn-b{background:#1a3a5c;color:#58a6ff}.btn-p{background:#3d1a1a;color:#f85149}.btn-t{background:#1c2128;color:#8b949e}.btn-b6{background:#2d2410;color:#d2991d}
+.btn-skip{padding:20px 0;border-radius:16px;border:1px solid #30363d;background:#161b22;color:#484f58;font-size:24px;font-weight:600;text-align:center;cursor:pointer;margin-top:8px;width:100%;}
+.btn-skip:active{background:#21262d;}
+.btn-undo{padding:8px 16px;border-radius:12px;border:1px solid #30363d;background:transparent;color:#8b949e;font-size:12px;cursor:pointer;margin-left:8px;}
+.bottom-stats{display:flex;justify-content:space-between;font-size:13px;color:#8b949e;padding:8px 0 4px 0;border-top:1px solid #21262d;}
+.stat-wins{color:#3fb950}.stat-losses{color:#f85149}
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#21262d;color:#e6edf3;padding:8px 20px;border-radius:20px;font-size:14px;z-index:100;opacity:0;transition:opacity .2s;}
+.toast.show{opacity:1;}
+
+/* Setup overlay */
+.setup-overlay{position:fixed;inset:0;background:#0d1117;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;padding:24px;}
+.setup-overlay h2{font-size:24px;margin-bottom:24px;}
+.setup-overlay label{display:block;font-size:14px;color:#8b949e;margin-bottom:4px;margin-top:16px;}
+.setup-overlay input,.setup-overlay select{width:100%;padding:14px;border-radius:12px;border:1px solid #30363d;background:#161b22;color:#e6edf3;font-size:18px;text-align:center;}
+.setup-overlay .btn-start{margin-top:24px;padding:16px;border-radius:12px;background:#3fb950;color:#000;font-size:18px;font-weight:700;border:none;cursor:pointer;width:100%;}
+.setup-overlay .btn-preset{font-size:12px;color:#58a6ff;background:none;border:none;margin-top:8px;cursor:pointer;}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div class="setup-overlay" id="setup">
+  <h2>⚡ Wolfie Setup</h2>
+  <label>Bankroll ($)</label>
+  <input type="number" id="s-br" value="250" min="10" step="10">
+  <label>Table Minimum ($)</label>
+  <input type="number" id="s-min" value="30" min="10" step="5">
+  <label>Target ($)</label>
+  <input type="number" id="s-target" value="500" min="10" step="10">
+  <label>Mode</label>
+  <select id="s-mode">
+    <option value="wolfie" selected>Wolfie (aggressive)</option>
+    <option value="normal">Normal (safe)</option>
+  </select>
+  <label>Rules</label>
+  <select id="s-rules">
+    <option value="even_money" selected>Even Money (B6 half-pay)</option>
+    <option value="standard">Standard (5% commission)</option>
+  </select>
+  <button class="btn-start" onclick="startSession()">START SESSION</button>
+  <button class="btn-preset" onclick="quickPreset()">Quick: $250 / $30 / $500 / Wolfie</button>
+</div>
+
+<!-- PLAY SCREEN -->
+<div class="app hidden" id="play">
+  <div class="top-bar">
+    <div class="br" id="bankroll">$250</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="btn-undo" onclick="undo()">↩</button>
+      <div class="mode-badge mode-wolfie" id="modeBadge">WOLFIE</div>
+    </div>
+  </div>
+  <div class="sub-info">
+    <span id="minInfo">Min: $30</span>
+    <span id="targetInfo">Target: $500</span>
+    <span id="handInfo">Hand: 0</span>
+  </div>
+  
+  <div class="result-strip" id="resultStrip"></div>
+  
+  <div class="call-area">
+    <div>
+      <div class="call-text call-skip" id="callText">SKIP</div>
+      <div class="miss-text" id="missText"></div>
+    </div>
+  </div>
+  
+  <div class="btn-grid">
+    <button class="btn btn-b" onclick="tap('B')">B</button>
+    <button class="btn btn-p" onclick="tap('P')">P</button>
+    <button class="btn btn-t" onclick="tap('T')">T</button>
+    <button class="btn btn-b6" onclick="tap('B6')">B6</button>
+  </div>
+  <button class="btn-skip" onclick="tap('SKIP')">SKIP</button>
+  
+  <div class="bottom-stats">
+    <span>✓ <span class="stat-wins" id="statWins">0</span></span>
+    <span>✗ <span class="stat-losses" id="statLosses">0</span></span>
+    <span>— <span id="statTies">0</span></span>
+    <span>Peak <span id="statPeak">$250</span></span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───
+let S = {
+  bankroll: 250, startBR: 250, minBet: 30, target: 500,
+  mode: 'wolfie', rules: 'even_money',
+  results: [],  // ['B','P','T','B6']
+  bets: [],     // [{side:'B',amt:60,result:'B',won:true}]
+  hands: 0, peak: 250,
+  pressStep: 0, lastBetWon: false, skipNext: false,
+};
+
+// ─── SETUP ───
+function quickPreset() {
+  document.getElementById('s-br').value = '250';
+  document.getElementById('s-min').value = '30';
+  document.getElementById('s-target').value = '500';
+  document.getElementById('s-mode').value = 'wolfie';
+}
+
+function startSession() {
+  S.startBR = S.bankroll = parseFloat(document.getElementById('s-br').value);
+  S.minBet = parseFloat(document.getElementById('s-min').value);
+  S.target = parseFloat(document.getElementById('s-target').value);
+  S.mode = document.getElementById('s-mode').value;
+  S.rules = document.getElementById('s-rules').value;
+  S.results = []; S.bets = []; S.hands = 0; S.peak = S.bankroll;
+  S.pressStep = 0; S.lastBetWon = false; S.skipNext = false;
+  
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('play').classList.remove('hidden');
+  updateUI();
+  decide();
+}
+
+function updateUI() {
+  let br = S.bankroll;
+  let profit = br - S.startBR;
+  let brEl = document.getElementById('bankroll');
+  brEl.innerHTML = '$' + br.toFixed(0);
+  if (profit > 0) brEl.innerHTML += ' <span class="profit">+$' + profit.toFixed(0) + '</span>';
+  else if (profit < 0) brEl.innerHTML += ' <span class="loss">-$' + Math.abs(profit).toFixed(0) + '</span>';
+  
+  document.getElementById('minInfo').textContent = 'Min: $' + S.minBet;
+  document.getElementById('targetInfo').textContent = 'Target: $' + S.target;
+  document.getElementById('handInfo').textContent = 'Hand: ' + S.hands;
+  
+  let badge = document.getElementById('modeBadge');
+  badge.textContent = S.mode.toUpperCase();
+  badge.className = 'mode-badge mode-' + S.mode;
+  if (S.mode === 'fullrisk') { badge.textContent = 'FULL-RISK'; badge.className = 'mode-badge mode-wolfie'; }
+  
+  // Result strip
+  let strip = document.getElementById('resultStrip');
+  strip.innerHTML = S.results.slice(-20).map(r => 
+    '<span class="dot dot-' + r.toLowerCase().replace('b6','b6') + '"></span>'
+  ).join('');
+  
+  // Stats
+  let wins = S.bets.filter(b=>b.won).length;
+  let losses = S.bets.filter(b=>!b.won && b.result !== 'T').length;
+  let ties = S.bets.filter(b=>b.result === 'T').length;
+  document.getElementById('statWins').textContent = wins;
+  document.getElementById('statLosses').textContent = losses;
+  document.getElementById('statTies').textContent = ties;
+  document.getElementById('statPeak').textContent = '$' + S.peak.toFixed(0);
+}
+
+// ─── DECISION ENGINE ───
+function getNonTieResults() {
+  return S.results.filter(r => r !== 'T').map(r => r === 'B6' ? 'B' : r);
+}
+
+function decide() {
+  // Stop checks
+  if (S.bankroll < S.minBet) { showCall('BUST', 'skip'); return; }
+  if (S.bankroll >= S.target) { showCall('TARGET!', 'skip'); return; }
+  
+  let nonTies = getNonTieResults();
+  let lastBet = S.bets[S.bets.length - 1];
+  
+  // Auto-SKIP conditions
+  let lastTwo = S.results.slice(-2);
+  if (lastTwo.length === 2 && lastTwo[0] === 'T' && lastTwo[1] === 'T') {
+    showCall('SKIP', 'skip'); return;
+  }
+  if (S.skipNext) {
+    S.skipNext = false;
+    showCall('SKIP', 'skip'); return;
+  }
+  if (S.bankroll < 3 * S.minBet && S.mode !== 'fullrisk') {
+    showCall('SKIP — survival', 'skip'); return;
+  }
+  
+  // Pick side
+  let side = 'B';  // Default Banker
+  if (nonTies.length >= 2) {
+    let last = nonTies[nonTies.length - 1];
+    let prev = nonTies[nonTies.length - 2];
+    // Streak: follow
+    if (last === prev && nonTies.length >= 2) {
+      side = last;
+    }
+    // Chop: fade (4+ alternating)
+    else if (nonTies.length >= 5) {
+      let isChop = true;
+      for (let i = nonTies.length - 4; i < nonTies.length; i++) {
+        if (nonTies[i] === nonTies[i-1]) { isChop = false; break; }
+      }
+      if (isChop) side = nonTies[nonTies.length-1] === 'B' ? 'P' : 'B';
+    }
+  }
+  
+  // Sizing
+  let baseUnit = S.minBet;
+  let cap = 3 * S.minBet;
+  let bet;
+  
+  if (S.mode === 'normal') {
+    bet = baseUnit;
+    if (S.lastBetWon && S.pressStep === 1 && S.bankroll >= 7 * baseUnit) bet = Math.min(2 * baseUnit, cap);
+    else if (S.lastBetWon && S.pressStep === 0 && S.bankroll >= 6 * baseUnit) bet = Math.min(1.5 * baseUnit, cap);
+  } else {
+    // Wolfie
+    bet = 2 * baseUnit;
+    if (S.lastBetWon && S.pressStep >= 1) {
+      bet = Math.min(3 * baseUnit, cap);
+    }
+  }
+  
+  bet = Math.min(bet, S.bankroll, cap);
+  
+  // Near target: bet exact need
+  let need = S.target - S.bankroll;
+  if (need <= bet && need >= S.minBet) {
+    bet = need;
+  }
+  
+  S._pendingCall = { side, bet };
+  showCall(side === 'B' ? 'B' : 'P', side === 'B' ? 'b' : 'p', '$' + bet.toFixed(0));
+  document.getElementById('missText').textContent = '$' + (S.bankroll - bet).toFixed(0) + ' miss';
+}
+
+function showCall(text, cls, sub) {
+  let el = document.getElementById('callText');
+  el.textContent = text;
+  el.className = 'call-text call-' + cls;
+  if (!sub) document.getElementById('missText').textContent = '';
+}
+
+// ─── INPUT ───
+function tap(result) {
+  if (result === 'SKIP') {
+    S.results.push('—');
+    S.hands++;
+    S.bets.push({ side: 'SKIP', amt: 0, result: 'SKIP', won: false });
+    S.lastBetWon = false;
+    S.pressStep = 0;
+    S.skipNext = false;
+    updateUI();
+    decide();
+    return;
+  }
+  
+  // Result tap: B, P, T, B6
+  if (!S._pendingCall && result !== 'T') {
+    // No pending bet but user tapped result — just record
+    S.results.push(result);
+    S.hands++;
+    updateUI();
+    decide();
+    return;
+  }
+  
+  let call = S._pendingCall || { side: 'B', bet: 0 };
+  let bet = call.bet;
+  let side = call.side;
+  
+  // Process result
+  S.results.push(result);
+  S.hands++;
+  
+  let won = false;
+  let brChange = 0;
+  
+  if (result === 'T') {
+    brChange = 0;  // push
+  } else if (result === side) {
+    brChange = bet;
+    won = true;
+  } else if (side === 'B' && result === 'B6') {
+    // Even Money: Banker 6 pays half
+    brChange = S.rules === 'even_money' ? bet * 0.5 : bet;
+    won = true;
+  } else {
+    brChange = -bet;
+    won = false;
+  }
+  
+  S.bankroll += brChange;
+  S.peak = Math.max(S.peak, S.bankroll);
+  
+  S.bets.push({ side, amt: bet, result, won, brChange });
+  
+  if (won) {
+    S.lastBetWon = true;
+    S.pressStep++;
+    S.skipNext = false;
+  } else {
+    S.lastBetWon = false;
+    S.pressStep = 0;
+    S.skipNext = (S.mode === 'normal') || (bet >= 2 * S.minBet);
+  }
+  
+  S._pendingCall = null;
+  updateUI();
+  
+  // Check stop conditions
+  if (S.bankroll < S.minBet) {
+    showCall('BUST', 'skip');
+    document.getElementById('missText').textContent = 'Session over — stop-loss';
+    return;
+  }
+  if (S.bankroll >= S.target) {
+    showCall('TARGET!', 'b');
+    document.getElementById('missText').textContent = '+$' + (S.bankroll - S.startBR).toFixed(0) + ' — bank it!';
+    return;
+  }
+  
+  decide();
+}
+
+function undo() {
+  if (S.bets.length === 0) return;
+  let last = S.bets.pop();
+  S.results.pop();
+  S.hands--;
+  S.bankroll -= last.brChange;
+  
+  // Restore previous state
+  if (S.bets.length > 0) {
+    let prev = S.bets[S.bets.length - 1];
+    S.lastBetWon = prev.won;
+    S.pressStep = prev.won ? (S.pressStep - 1) : 0;
+  } else {
+    S.lastBetWon = false;
+    S.pressStep = 0;
+  }
+  
+  S._pendingCall = null;
+  updateUI();
+  decide();
+}
+
+// ─── PERSIST ───
+function save() {
+  try { localStorage.setItem('wolfie_session', JSON.stringify(S)); } catch(e) {}
+}
+setInterval(save, 5000);
+
+// Load saved
+try {
+  let saved = JSON.parse(localStorage.getItem('wolfie_session'));
+  if (saved && saved.bankroll != null) {
+    S = saved;
+    S._pendingCall = null;
+    document.getElementById('setup').classList.add('hidden');
+    document.getElementById('play').classList.remove('hidden');
+    updateUI();
+    decide();
+  }
+} catch(e) {}
+
+// ─── TOAST ───
+function toast(msg) {
+  let t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1500);
+}
+</script>
+</body>
+</html>
