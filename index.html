@@ -111,7 +111,6 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
   <div class="top-bar">
     <div class="br" id="bankroll">$200</div>
     <div class="top-actions">
-      <button class="btn-home-sm" onclick="goHome()" title="End session">⌂</button>
       <button class="btn-undo" onclick="undo()">↩</button>
       <div class="mode-badge mode-wolfie" id="modeBadge">WOLFIE</div>
     </div>
@@ -158,6 +157,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
   <div class="bottom-actions">
     <button class="btn-action btn-copy" onclick="copyResults()">📋 Copy Results</button>
     <button class="btn-action btn-reset" onclick="goHome()">↺ Reset Session</button>
+    <button class="btn-action btn-home" onclick="goHome()">⌂ Home</button>
   </div>
 </div>
 
@@ -275,10 +275,6 @@ function decide() {
     showCall('SKIP', 'skip', '', '', '');
     return;
   }
-  if (S.bankroll < 3 * S.minBet && S.mode !== 'fullrisk') {
-    showCall('SKIP', 'skip', '', '', 'survival');
-    return;
-  }
 
   // Pick side
   let side = 'B';
@@ -308,28 +304,24 @@ function decide() {
     bet = baseUnit;
     sizeLabel = '1u base';
     whyParts.push('Normal mode ▸ 1u = $' + baseUnit);
-    if (S.lastBetWon && S.pressStep === 1 && S.bankroll >= 7 * baseUnit) {
+    if (S.lastBetWon && S.pressStep >= 2) {
       bet = Math.min(2 * baseUnit, cap);
       sizeLabel = '2u press';
-      whyParts.push('Won last ▸ press to 2u');
-    } else if (S.lastBetWon && S.pressStep === 0 && S.bankroll >= 6 * baseUnit) {
-      bet = Math.min(1.5 * baseUnit, cap);
-      sizeLabel = '1.5u press';
-      whyParts.push('Won last ▸ press to 1.5u');
+      whyParts.push('2 wins ▸ press to 2u');
     }
   } else {
     // Wolfie
     bet = 2 * baseUnit;
     sizeLabel = '2u base';
     whyParts.push('Wolfie mode ▸ 2u = $' + (2 * baseUnit));
-    if (S.lastBetWon && S.pressStep === 1) {
-      bet = Math.min(3 * baseUnit, cap);
-      sizeLabel = '3u press';
-      whyParts.push('Won last ▸ press to 3u');
-    } else if (S.lastBetWon && S.pressStep >= 2) {
+    if (S.lastBetWon && S.pressStep >= 3) {
       bet = cap;
       sizeLabel = 'max press';
-      whyParts.push('Hot streak ▸ max press $' + cap);
+      whyParts.push('3+ wins ▸ max press $' + cap);
+    } else if (S.lastBetWon && S.pressStep >= 2) {
+      bet = Math.min(3 * baseUnit, cap);
+      sizeLabel = '3u press';
+      whyParts.push('2 wins ▸ press to 3u');
     }
   }
 
